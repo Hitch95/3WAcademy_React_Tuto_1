@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
-let id = null
 export default function Incrementer () {
     const [count, setCount] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
+    const interval = useRef(null)
 
   function start() {
     if (isRunning) return
 
     setIsRunning(true)
 
-    id = setInterval(() => {
+    interval.current = setInterval(() => {
         setCount(prevCount => prevCount + 1)
     }, 100)
   }
 
   function pause() {
     setIsRunning(false)
-    clearInterval(id)
+    clearInterval(interval.current)
   }
 
   function reset() {
