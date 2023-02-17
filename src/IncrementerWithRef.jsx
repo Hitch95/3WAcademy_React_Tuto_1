@@ -1,35 +1,35 @@
 import React, { useRef, useState } from "react";
 
 export default function Incrementer () {
-    const [count, setCount] = useState(0);
-    const [isRunning, setIsRunning] = useState(false);
+    const countRef = useRef(0)
+    const isRunningRef = useRef(false)
+    const countContainerRef = useRef(null)
     const interval = useRef(null)
 
-    console.log(count);
-
   function start() {
-    if (isRunning) return
+    if (isRunningRef.current) return
 
-    setIsRunning(true)
+    isRunningRef.current = true
 
     interval.current = setInterval(() => {
-        setCount(prevCount => prevCount + 1)
+        countContainerRef.current.innerText = ++countRef.current
     }, 100)
   }
 
   function pause() {
-    setIsRunning(false)
+    isRunningRef.current = false
     clearInterval(interval.current)
   }
 
   function reset() {
-    setCount(0)
     pause()
+    countRef.current = 0
+    countContainerRef.current.innerText = 0
   }
 
   return (
     <>
-      <h2>Incrementer: <span>{count}</span></h2>
+      <h2>Incrementer with refs: <span ref={countContainerRef}></span></h2>
       <button onClick={start} className='btn btn-primary me-2'>Start</button>
       <button onClick={pause} className='btn btn-warning me-2'>Pause</button>
       <button onClick={reset} className='btn btn-dark me-2'>Reset</button>
