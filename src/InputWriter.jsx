@@ -1,10 +1,10 @@
-import { useRef } from "react"
+import { useRef } from "react";
 
 export default function InputWriter() {
-    const containerRef = useRef(null)
+    const containerRef = useRef(null);
 
     function handleChange(e) {
-        containerRef.current.innerText = e.currentTarget.value
+        containerRef.current.innerText = e.currentTarget.value;
     }
 
     return <>

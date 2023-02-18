@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Counter from './Counter';
 import Incrementer from './Incrementer';
 import StopWatch from './StopWatch';
