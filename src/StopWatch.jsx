@@ -1,68 +1,85 @@
-import { useState, useRef } from "react";
-import FormattedTime from "./FormattedTime";
+import { useEffect, useRef, useState } from "react";
 
 export default function StopWatch() {
-  const initialTime = { sec: 55, min: 59, hour: 0 };
-  const [time, setTime] = useState(initialTime);
-  const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(true);
-  const intervalRef = useRef(null);
+  const initialTime = { sec: 55, min: 59, hour: 1 };
+  const isRunning = useRef(false);
+  const timeRef = useRef(null);
+  const divTimeRef = useRef(null);
+  const interval = useRef(null);
 
-  const handleStart = () => {
-    setIsActive(true);
-    setIsPaused(false);
-    if (!intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        if (!isPaused) {
-          setTime((currentTime) => {
-            let { sec, min, hour } = currentTime;
-            sec += 1;
-            if (sec === 60) {
-              sec = 0;
-              min += 1;
-            }
-            if (min === 60) {
-              min = 0;
-              hour += 1;
-            }
-            return { sec, min, hour };
-          });
-        }
-      }, 1000);
+  useEffect(() => {
+    timeRef.current = { ...initialTime };
+    displayTime();
+
+    return function cleanupFunction () {
+      isRunning.current = false;
+      clearInterval(interval.current);
     }
-  };
+  }
+  , []);
 
-  const handlePauseResume = () => {
-    setIsPaused(!isPaused);
-    if (isActive) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+  function start() {
+    if (isRunning.current) return;
+
+    isRunning.current = true;
+
+    interval.current = setInterval(() => {
+      updateTime();
+      displayTime();
+    }, 1000);
+  }
+
+  function pause() {
+    isRunning.current = false;
+    clearInterval(interval.current);
+  }
+
+  function reset() {
+    pause();
+    timeRef.current = { ...initialTime };
+    displayTime();
+  }
+
+  function updateTime() {
+    timeRef.current.sec += 1;
+
+    if (timeRef.current.sec > 59) {
+      timeRef.current.sec = 0;
+      timeRef.current.min += 1;
     }
-  };
 
-  const handleReset = () => {
-    setIsActive(false);
-    setIsPaused(true);
-    clearInterval(intervalRef.current);
-    setTime(initialTime);
-  };
+    if (timeRef.current.min > 59) {
+      timeRef.current.min = 0;
+      timeRef.current.hour += 1;
+    }
+  }
+
+  function displayTime() {
+    divTimeRef.current.innerText = formatTime(timeRef.current);
+  }
 
   return (
     <>
       <h2>Stop Watch</h2>
-      <FormattedTime time={time} />
+      <div ref={divTimeRef} className="alert alert-info my-2"></div>
 
-      <button onClick={handleStart} className="btn btn-primary me-2">
+      <button onClick={start} className="btn btn-primary me-2">
         Start
       </button>
-      <button onClick={handlePauseResume} className="btn btn-warning me-2">
-        Paused
+      <button onClick={pause} className="btn btn-warning me-2">
+        Pause
       </button>
-      <button onClick={handleReset} className="btn btn-dark">
+      <button onClick={reset} className="btn btn-dark">
         Reset
       </button>
     </>
   );
+}
+
+function formatTime(time) {
+  let output = `${time.hour.toString().padStart(2, "0")}`;
+  output += `:${time.min.toString().padStart(2, "0")}`;
+  output += `:${time.sec.toString().padStart(2, "0")}`;
+
+  return output;
 }
