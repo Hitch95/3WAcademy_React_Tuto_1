@@ -1,14 +1,174 @@
-import { useRef } from "react"
+import { useEffect, useState, useRef } from "react";
 
-export default function Forms() {
-    const titleRef = useRef(null)
+const Forms = () => {
+  const inputRef = useRef();
+  const [formInputs, setFormInputs] = useState({
+    firstname: "",
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
 
-    function handleChange(e) {
-        titleRef.current.innerText = e.currentTarget.value
+  const [validationMessages, setValidationMessages] = useState({
+    firstname: "",
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const [formErrors, setFormErrors] = useState({});
+
+  const [isValid, setIsValid] = useState(false);
+
+  const regex = {
+    email: /\S+@\S+.\S+/,
+    password: /^(?=.[!@#$%^&(),.?":{}|<>])(?=.\d)(?=.[a-z])(?=.*[A-Z]).{8,}$/,
+    name: /^[a-zA-Z'-]+$/,
+  };
+
+  const validateInput = (name, value) => {
+    if (!value) {
+      setValidationMessages((prevState) => ({
+        ...prevState,
+        [name]: `Please enter a ${name} !`,
+      }));
+      return false;
     }
+    if (regex[name].test(value)) {
+      setValidationMessages((prevState) => ({
+        ...prevState,
+        [name]: `Your ${name} looks good!`,
+      }));
+      return true;
+    } else {
+      setValidationMessages((prevState) => ({
+        ...prevState,
+        [name]: `Please enter a valid ${name} !`,
+      }));
+      return false;
+    }
+  };
+  
 
-    return <>
-        <h2 ref={titleRef}>{}</h2>
-        <input type="text" onChange={handleChange} />
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+  
+    // Check if value is not empty or undefined
+    if (value && value !== "") {
+      // Call validateInput only if value is not empty
+      validateInput(name, value);
+    }
+  
+    setFormInputs((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+  
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isValid) {
+      console.log(inputRef);
+    }
+  };
+
+  useEffect(() => {}, []);
+
+  return (
+    <>
+      <form onSubmit={handleSubmit} action="">
+        <label htmlFor="firstname">Firstname</label>
+        <input
+          type="text"
+          placeholder="Firstname"
+          name="firstname"
+          onChange={handleInputChange}
+          ref={inputRef}
+          className="form-control"
+        />
+        <div
+          className={`message ${
+            isValid ? "success text-success" : "error text-danger"
+          }`}
+        >
+          {validationMessages.firstname}
+        </div>
+        <label htmlFor="name">Name</label>
+        <input
+          type="text"
+          placeholder="Name"
+          name="name"
+          onChange={handleInputChange}
+          ref={inputRef}
+          className="form-control"
+        />
+        <div
+          className={`message ${
+            isValid ? "success text-success" : "error text-danger"
+          }`}
+        >
+          {validationMessages.name}
+        </div>
+
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          placeholder="Username"
+          name="username"
+          onChange={handleInputChange}
+          ref={inputRef}
+          className="form-control"
+        />
+        <div
+          className={`message ${
+            isValid ? "success text-success" : "error text-danger"
+          }`}
+        >
+          {validationMessages.username}
+        </div>
+
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          placeholder="Email"
+          name="email"
+          onChange={handleInputChange}
+          ref={inputRef}
+          className="form-control"
+        />
+        <div
+          className={`message ${
+            isValid ? "success text-success" : "error text-danger"
+          }`}
+        >
+          {validationMessages.email}
+        </div>
+
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          onChange={handleInputChange}
+          ref={inputRef}
+          className="form-control"
+        />
+        <div
+          className={`message ${
+            isValid ? "success text-success" : "error text-danger"
+          }`}
+        >
+          {validationMessages.password}
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </form>
     </>
-}
+  );
+};
+
+export default Forms;
