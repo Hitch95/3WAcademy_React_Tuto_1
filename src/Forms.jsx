@@ -24,28 +24,35 @@ const Forms = () => {
 
   const regex = {
     email: /\S+@\S+.\S+/,
-    password: /^(?=.[!@#$%^&(),.?":{}|<>])(?=.\d)(?=.[a-z])(?=.*[A-Z]).{8,}$/,
-    name: /^[a-zA-Z'-]+$/,
+    password: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+~`=[\]{}|\\;:'",.<>/?]).{8,}$/,
+    firstname: /^[A-Z][a-zA-Z]*$/,
+    name: /^[A-Z][a-zA-Z]*$/,
+    username: /^[a-zA-Z0-9_\-]+$/,
   };
 
   const validateInput = (name, value) => {
+    console.log(`Name: ${name}`);
+    console.log(`Value: ${value}`);
+    console.log(`Regex: ${regex[name]}`);
+    console.log('Test Result:', regex[name].test(value));
+
     if (!value) {
       setValidationMessages((prevState) => ({
         ...prevState,
-        [name]: `Please enter a ${name} !`,
+        [name]: `Please enter a ${name}!`,
       }));
       return false;
     }
-    if (regex[name].test(value)) {
+    if (regex[name] && regex[name].test(value)) {
       setValidationMessages((prevState) => ({
         ...prevState,
-        [name]: `Your ${name} looks good!`,
-      }));
+        [name]: <span className="text-success">Your {name} looks good!</span>,
+      }));      
       return true;
     } else {
       setValidationMessages((prevState) => ({
         ...prevState,
-        [name]: `Please enter a valid ${name} !`,
+        [name]: `Please enter a valid ${name}!`,
       }));
       return false;
     }
